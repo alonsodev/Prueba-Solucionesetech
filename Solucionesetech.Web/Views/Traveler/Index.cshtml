@@ -1,0 +1,282 @@
+﻿@{
+    ViewData["Title"] = "Viajeros";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">assignment</i>
+                    </div>
+                    <h4 class="card-title">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                        <!--        Here you can write extra buttons/actions for the toolbar              -->
+                    </div>
+                    <div class="material-datatables">
+                        <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                        </table>
+                    </div>
+                </div>
+                <!-- end content-->
+            </div>
+            <!--  end card  -->
+        </div>
+        <!-- end col-md-12 -->
+    </div>
+    <!-- end row -->
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card ">
+                                    <div class="card-header card-header-rose card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="material-icons">mail_outline</i>
+                                        </div>
+                                        <h4 class="card-title">Viajeros</h4>
+
+                                    </div>
+                                    <div class="card-body ">
+                                        <form id="frmDataEntry">
+                                            <input type="hidden" id="TravelerId" name="TravelerId" value="0" />
+                                            <div class="form-group">
+                                                <label for="IdentificationDocument" class="bmd-label-static required"># Documento *</label>
+                                                <input type="text" class="form-control" id="IdentificationDocument" name="IdentificationDocument" aria-describedby="nameHelp">
+                                                <small id="nameHelp" class="form-text text-muted">Nro. de Documento de Identidad del viajero</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Name" class="bmd-label-static">Nombre *</label>
+                                                <input type="text" class="form-control" id="Name" name="Name" aria-describedby="nameHelp">
+                                                <small id="nameHelp" class="form-text text-muted">Nombre del viajero</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Address" class="bmd-label-static">Dirección *</label>
+                                                <input type="text" class="form-control" id="Address" name="Address" aria-describedby="nameHelp">
+                                                <small id="nameHelp" class="form-text text-muted">Dirección del viajero</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Phone" class="bmd-label-static">Teléfono *</label>
+                                                <input type="number" class="form-control" id="Phone" name="Phone" aria-describedby="nameHelp">
+                                                <small id="nameHelp" class="form-text text-muted">Teléfono del viajero</small>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-footer ">
+                                        <button type="button" id="btnSave" class="btn btn-link">Grabar</button>
+                                        <button type="button" class="btn btn-danger btn-link" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        var table;
+        $(document).ready(function () {
+            table =  $('#datatables').DataTable({
+                
+                "responsive": true,
+                "proccessing": true,
+                "serverSide": true,
+                "ajax": {
+                    url: "@(ViewBag.API_URL + "Traveler/paginated")",
+                    type: 'POST',
+                    "contentType": "application/json",
+                    "data": function ( d ) {
+                      return JSON.stringify( d );
+                    }
+                },
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Buscar registros",
+                    url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                },
+                "sDom": "<'row'<'col-12'B>><'row'<'col-sm-6 col-xs-5'l><'col-sm-6 col-xs-7'f>r>t<'row'<'col-sm-5 hidden-xs'i><'col-sm-7 col-xs-12 clearfix'p>>",
+                buttons: [
+
+                    {
+                        extend: 'csvHtml5',
+                        className: "btn btn-effect-ripple btn-default toggle-bordered enable-tooltip",
+                        init: function (api, node, config) {
+                            $(node).removeClass('dt-button')
+                        }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        className: "btn btn-effect-ripple btn-default toggle-bordered enable-tooltip",
+                        init: function (api, node, config) {
+                            $(node).removeClass('dt-button')
+                        }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        className: "btn btn-effect-ripple btn-default toggle-bordered enable-tooltip",
+                        init: function (api, node, config) {
+                            $(node).removeClass('dt-button')
+                        }
+                    },
+                    {
+                        text: '<i class="fa fa-plus"></i> Agregar',
+                        className: "btn btn-primary pull-right",
+                        action: function (e, dt, node, config) {
+                            $("#IdentificationDocument").val("");
+                            $("#TravelerId").val(0);
+                            $("#Name").val("");
+                            $("#Address").val("");
+                            $("#Phone").val("");
+                            $("#myModal").find('.card-title').text('Agregar Viajero')
+                            $("#myModal").modal("show");
+                        },
+                        init: function (api, node, config) {
+                            $(node).removeClass('dt-button');
+                            setTimeout(function () {
+                                $(node).parent().parent().append($(node));
+                            }, 100);
+                        },
+                    }
+                ],
+                "columns": [
+
+                    { "data": "Name", "title": "Nombre", "width": "45%" },
+                    { "data": "IdentificationDocument", "title": "# Documento", "width": "10%" },
+                    { "data": "Address", "title": "Dirección", "width": "25%" },
+                    { "data": "Phone", "title": "Teléfono", "width": "10%" },
+                    { "data": "TravelerId", "title" : "Acciones", "width": "10%"  }
+                ],
+                columnDefs: [
+                    { 'className': 'text-center', 'targets': [4] },
+                    {
+                        render: function (data, type, row) {
+                            return '<a href="javascript:edit(' + row.TravelerId + ')" class="btn btn-link btn-warning btn-just-icon edit" data-toggle="tooltip" title="Editar"><span class="material-icons">edit</span></a> '
+                                + '<a href="javascript:del(' + row.TravelerId + ')" class="btn btn-link btn-danger btn-just-icon remove" row-id="' + row.TravelerId  +'" data-toggle="tooltip" title="Eliminar"><span class="material-icons">remove_circle</span></a>';
+                        },
+                        targets: 4,
+                        orderable: false
+                    }
+                ],
+                pageLength: 10,
+                "pagingType": "full_numbers",
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "All"]
+                ],
+            });
+
+            $("#btnSave").click(() => {
+                var data = $("#frmDataEntry").serializeFormJSON();
+
+                $.ajax({
+                  url: "@(ViewBag.API_URL + "Traveler")",
+                  type:$("#TravelerId").val() == "0" ? 'POST' : 'PUT',
+                    dataType: "json",
+                  "contentType": "application/json",
+                  data: JSON.stringify( data ),
+                  success: function (data) {
+                      table.ajax.reload();
+                    $('#myModal').modal('hide');
+                  },
+                    error: function () {
+                        var msgError = "Ha sucedido un error inesperado!";
+                        if (data.responseJSON != null && data.responseJSON.StatusCode == 400) {
+                            msgError = data.responseJSON.Message;
+                        }
+                        swal({
+                            title: "Error!",
+                            text: msgError,
+                            buttonsStyling: false,
+                            confirmButtonClass: "btn btn-success",
+                            type: "error"
+                        }).catch(swal.noop)
+                    }
+                });
+            })
+        });
+
+        function edit(id) {
+            $.ajax({
+                url: "@(ViewBag.API_URL + "Traveler/")" + id,
+                type:'GET',
+                "contentType": "application/json",
+                success: function (data) {
+                    $("#IdentificationDocument").val(data.IdentificationDocument);
+                    $("#TravelerId").val(data.TravelerId);
+                    $("#Name").val(data.Name);
+                    $("#Address").val(data.Address);
+                    $("#Phone").val(data.Phone);
+                    $("#myModal").find('.card-title').text('Editar Viaje Disponible')
+                    $("#myModal").modal("show");
+                },
+                error: function () {
+                    var msgError = "Ha sucedido un error inesperado!";
+                        if (data.responseJSON != null && data.responseJSON.StatusCode == 400) {
+                            msgError = data.responseJSON.Message;
+                        }
+                        swal({
+                            title: "Error!",
+                            text: msgError,
+                            buttonsStyling: false,
+                            confirmButtonClass: "btn btn-success",
+                            type: "error"
+                        }).catch(swal.noop)
+                }
+            });
+        }
+
+        function del(id) {
+            Swal.fire({
+              title: 'Estás seguro que deseas eliminar este registro?',
+              showCancelButton: true,
+              confirmButtonText: 'Sí',
+              cancelButtonText: 'No',
+            }).then((result) => {
+              if (result) {
+                $.ajax({
+                    url: "@(ViewBag.API_URL + "Traveler/")" + id,
+                    type:'DELETE',
+                    "contentType": "application/json",
+                    success: function (data) {
+                        table.ajax.reload();
+                    },
+                    error: function (data) {
+                        var msgError = "Ha sucedido un error inesperado!";
+                        if (data.responseJSON != null && data.responseJSON.StatusCode == 400) {
+                            msgError = data.responseJSON.Message;
+                        }
+                        swal({
+                            title: "Error!",
+                            text: msgError,
+                            buttonsStyling: false,
+                            confirmButtonClass: "btn btn-success",
+                            type: "error"
+                        }).catch(swal.noop)
+                    }
+                });
+              }
+            })
+
+        }
+    </script>
+}

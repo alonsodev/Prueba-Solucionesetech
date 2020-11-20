@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Solucionesetech.CrossCuting\Solucionesetech.CrossCuting.csproj" />
+    <ProjectReference Include="..\Solucionesetech.DataAccess\Solucionesetech.DataAccess.csproj" />
+    <ProjectReference Include="..\Solucionesetech.Dtos\Solucionesetech.Dtos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Travel\Application\Mappers\" />
+    <Folder Include="Traveler\Application\Mappers\" />
+    <Folder Include="AvailableTravel\Application\Mappers\" />
+    <Folder Include="Destination\Application\Mappers\" />
+    <Folder Include="Origin\Application\Mappers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+</Project>
